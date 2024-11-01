@@ -1,11 +1,13 @@
 <template>
   <n-message-provider>
+    <n-dialog-provider>
     <n-layout position="absolute" has-sider="true">
       <Sider />
       <n-layout class="main_container">
         <router-view />
       </n-layout>
     </n-layout>
+  </n-dialog-provider>
   </n-message-provider>
 </template>
 

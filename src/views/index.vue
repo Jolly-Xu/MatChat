@@ -336,116 +336,6 @@
                 </n-upload-dragger>
               </n-upload> -->
 
-              <div v-if="!databasesIsConn" class="topBox">
-                <div class="line"></div>
-                <div class="word">数据库连接</div>
-              </div>
-
-              <div v-if="!databasesIsConn" class="databasesConn">
-                <div class="inputbox">
-                  <span>数据库:</span
-                  ><n-select
-                    class="inp"
-                    v-model:value="databasesConnMsg.databases"
-                    :options="databasesSel"
-                    placeholder="选择数据库"
-                  />
-                </div>
-
-                <div class="inputbox">
-                  <span>连接名:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="databasesConnMsg.connName"
-                    type="text"
-                    placeholder="连接名: Test"
-                  />
-                </div>
-                <div class="inputbox">
-                  <span>主机:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="databasesConnMsg.hostname"
-                    type="text"
-                    placeholder="主机地址: http://localhost"
-                  />
-                </div>
-                <div class="inputbox">
-                  <span>端口:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="databasesConnMsg.port"
-                    type="text"
-                    placeholder="端口号: 3306"
-                  />
-                </div>
-                <div class="inputbox">
-                  <span>用户名:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="databasesConnMsg.username"
-                    type="text"
-                    placeholder="数据库用户名: root"
-                  />
-                </div>
-                <div class="inputbox">
-                  <span>密码:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="databasesConnMsg.password"
-                    type="password"
-                    placeholder="数据库登录密码"
-                  />
-                </div>
-                <div class="inputbox">
-                  <span>数据库名:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="databasesConnMsg.databasename"
-                    type="text"
-                    placeholder="输入需要连接的数据库名"
-                  />
-                </div>
-                <!-- <div class="inputbox">
-                  <span>数据库:</span
-                  ><n-input
-                    class="inp"
-                    v-model:value="value"
-                    type="text"
-                    placeholder="数据库名: test"
-                  />
-                </div> -->
-
-                <div class="bottomBox">
-                  <n-button tertiary round><span>清空</span> </n-button>
-                  <n-button round type="info" secondary @click="connect2Demo">
-                    Demo连接
-                  </n-button>
-                  <n-button round color="#b771f8" @click="connect2DataBases">
-                    连接
-                  </n-button>
-                </div>
-              </div>
-
-              <div v-if="databasesIsConn" class="topBox">
-                <div class="line"></div>
-                <div class="word">数据库</div>
-              </div>
-
-              <div v-if="databasesIsConn" class="databasesSelBox">
-                <n-tree
-                  block-line
-                  expand-on-click
-                  :data="databasesMeau"
-                  :node-props="nodeProps"
-                />
-                <div class="bottomBox">
-                  <n-button tertiary round @click="databasesIsConn = false"
-                    ><span>重置</span>
-                  </n-button>
-                </div>
-              </div>
-
               <div class="topBox">
                 <div class="line"></div>
                 <div class="word">上传外部知识库</div>
@@ -488,6 +378,7 @@ import MarkdownItTasklists from "markdown-it-task-lists";
 import hljs from "highlight.js/lib/common";
 import MarkdownItTOC from "markdown-it-toc-done-right";
 import mk from "markdown-it-katex";
+import store from "@/store";
 import {
   chat2test,
   ConnDatabases,
@@ -509,8 +400,6 @@ import {
   ArchiveOutline,
   ListCircleOutline,
   PaperPlane,
-  Folder,
-  FolderOpenOutline,
   ArrowDownSharp,
   Add,
   ColorFilterSharp,
@@ -532,6 +421,8 @@ const isSending = ref(false);
 
 // chatpage的ref对象，对它进行操作
 const chatref = ref(null);
+
+const islogin = ref(false);
 
 // 终止请求controller变量
 let controller = null;
@@ -644,48 +535,7 @@ function openHistoryChat(id) {
 }
 
 // 对话数据
-const chatMsgs = ref([
-  // {
-  //   id: 1,
-  //   name: "ChatDemo",
-  //   content:
-  //     " # Math Rulez! \n  $\\sqrt{3x-1}+(1+x)^2$ \n # 一号标题 \n\n  ## 二号标题 \n\n  ### 三号标题 \n\n 这是百度的链接 [https://www.baidu.com/](https://www.baidu.com/)\n\n ```javascript \nconsole.log('hello world') \n ```  \n\n 下面是一张图片 \n\n![风景图](https://img0.baidu.com/it/u=1090967238,1582698902&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500) \n\n   ```javascript\n fuction helloWorld() {console.log('Hello, world!'); \n```",
-  //   avatar:
-  //     "https://t12.baidu.com/it/u=3889196102,199724547&fm=30&app=106&f=JPEG?w=640&h=640&s=6B243A62FEF71BB350A990CB0000A0A1",
-  // },
-  // {
-  //   id: 1,
-  //   name: "ChatDemo",
-  //   content:
-  //     " # Math Rulez! \n  $\\sqrt{3x-1}+(1+x)^2$ \n # 一号标题 \n\n  ## 二号标题 \n\n  ### 三号标题 \n\n 这是百度的链接 [https://www.baidu.com/](https://www.baidu.com/)\n\n ```javascript \nconsole.log('hello world') \n ```  \n\n 下面是一张图片 \n\n![风景图](https://img0.baidu.com/it/u=1090967238,1582698902&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500) \n\n   ```javascript\n fuction helloWorld() {console.log('Hello, world!'); \n```",
-  //   avatar:
-  //     "https://t12.baidu.com/it/u=3889196102,199724547&fm=30&app=106&f=JPEG?w=640&h=640&s=6B243A62FEF71BB350A990CB0000A0A1",
-  // },
-  // {
-  //   id: 1,
-  //   name: "ChatDemo",
-  //   content:
-  //     " # Math Rulez! \n  $\\sqrt{3x-1}+(1+x)^2$ \n # 一号标题 \n\n  ## 二号标题 \n\n  ### 三号标题 \n\n 这是百度的链接 [https://www.baidu.com/](https://www.baidu.com/)\n\n ```javascript \nconsole.log('hello world') \n ```  \n\n 下面是一张图片 \n\n![风景图](https://img0.baidu.com/it/u=1090967238,1582698902&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500) \n\n   ```javascript\n fuction helloWorld() {console.log('Hello, world!'); \n```",
-  //   avatar:
-  //     "https://t12.baidu.com/it/u=3889196102,199724547&fm=30&app=106&f=JPEG?w=640&h=640&s=6B243A62FEF71BB350A990CB0000A0A1",
-  // },
-  // {
-  //   id: 1,
-  //   name: "ChatDemo",
-  //   content:
-  //     " # Math Rulez! \n  $\\sqrt{3x-1}+(1+x)^2$ \n # 一号标题 \n\n  ## 二号标题 \n\n  ### 三号标题 \n\n 这是百度的链接 [https://www.baidu.com/](https://www.baidu.com/)\n\n ```javascript \nconsole.log('hello world') \n ```  \n\n 下面是一张图片 \n\n![风景图](https://img0.baidu.com/it/u=1090967238,1582698902&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500) \n\n   ```javascript\n fuction helloWorld() {console.log('Hello, world!'); \n```",
-  //   avatar:
-  //     "https://t12.baidu.com/it/u=3889196102,199724547&fm=30&app=106&f=JPEG?w=640&h=640&s=6B243A62FEF71BB350A990CB0000A0A1",
-  // },
-  // {
-  //   id: 1,
-  //   name: "ChatDemo",
-  //   content:
-  //     " # Math Rulez! \n  $\\sqrt{3x-1}+(1+x)^2$ \n # 一号标题 \n\n  ## 二号标题 \n\n  ### 三号标题 \n\n 这是百度的链接 [https://www.baidu.com/](https://www.baidu.com/)\n\n ```javascript \nconsole.log('hello world') \n ```  \n\n 下面是一张图片 \n\n![风景图](https://img0.baidu.com/it/u=1090967238,1582698902&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500) \n\n   ```javascript\n fuction helloWorld() {console.log('Hello, world!'); \n```",
-  //   avatar:
-  //     "https://t12.baidu.com/it/u=3889196102,199724547&fm=30&app=106&f=JPEG?w=640&h=640&s=6B243A62FEF71BB350A990CB0000A0A1",
-  // },
-]);
+const chatMsgs = ref([]);
 
 //markdown-it 解析器
 const markdown = new MarkdownIt({
@@ -835,10 +685,10 @@ function send_ready(event) {
         window.$message.warning("请等待问题回答完毕后，再继续提问！");
         return;
       }
-      if (databasesIsConn.value == false) {
-        window.$message.warning("请先在侧边栏工具中连接数据库！");
-        return;
-      }
+      // if (databasesIsConn.value == false) {
+      //   window.$message.warning("请先在侧边栏工具中连接数据库！");
+      //   return;
+      // }
       sendChatMsg();
     }
   }
@@ -848,10 +698,10 @@ function send_ready(event) {
 function packgeSendMsg() {
   let body = {
     id: 11,
-    name: "TestUser",
+    name: store.getters.userinfo.name,
     content: sendMsgContent.value,
     avatar:
-      "https://img0.baidu.com/it/u=1450269893,1819089861&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800",
+      "https://sfile.chatglm.cn/activeimg/bdms/66135a5a1bfb5b0037b2bd52",
   };
 
   // 如果是第一条数据,存入历史对话中
@@ -871,11 +721,15 @@ function sendChatMsg() {
     controller.abort();
     return;
   }
-
+  if (!store.getters.isLoggedIn) {
+    window.$message.error("请先点击左下角头像进行登录！");
+    return;
+  }
   if (sendMsgContent.value == "") {
     window.$message.warning("不能发送空信息！");
     return;
   }
+
   // 请求参数
   let requestbody = {
     content: sendMsgContent.value,
@@ -897,7 +751,7 @@ function sendChatMsg() {
       // 数据对象
       let body = {
         id: 10,
-        name: "ChatDemo",
+        name: "ChatMat",
         content: "",
         avatar:
           "https://t12.baidu.com/it/u=3889196102,199724547&fm=30&app=106&f=JPEG?w=640&h=640&s=6B243A62FEF71BB350A990CB0000A0A1",
@@ -1128,15 +982,17 @@ const nodeProps = ({ option }) => {
   };
 };
 
+const user = ref({});
+
 export default defineComponent({
   setup() {
     onMounted(() => {
       initClipboard();
-      getHistory().then((res) => {
-        let data = res.data.result;
-        chathistory.value = data;
-        console.log(data);
-      });
+      // getHistory().then((res) => {
+      //   let data = res.data.result;
+      //   chathistory.value = data;
+      //   console.log(data);
+      // });
     });
     window.$message = useMessage();
 

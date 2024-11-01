@@ -15,12 +15,19 @@ module.exports = defineConfig({
   	// open: true, //自动打开浏览器
   	proxy: {
   		'/api': {
-  			target: "http://121.40.42.223:8000",
+  			target: "http://121.40.42.223:8090",
   			changeOrigin: true,
   			pathRewrite: {
   				'/api': ''
   			}
-  		}
+  		},
+		'/Api': {
+  			target: "http://121.40.42.223:8000",
+  			changeOrigin: true,
+  			pathRewrite: {
+  				'/Api': ''
+  			}
+  		},
   	}
   }
 });
